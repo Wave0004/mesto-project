@@ -20,3 +20,15 @@
     line-height: 15px;
   }
 }
+
+.popup__input_invalid {
+  border-color: red;
+}
+
+.popup__input-error {
+  color: red;
+  font-size: 12px;
+  margin-top: 5px;
+  display: none; /* Скрыто по умолчанию */
+}
+

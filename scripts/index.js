@@ -133,8 +133,84 @@ cardFormElement.addEventListener('submit', handleCardFormSubmit);
 
 // Инициализация карточек
 renderCards(initialCards);
+// Функция проверки поля
+function checkInputValidity(input) {
+    const errorElement = input.parentElement.querySelector('.popup__input-error');
+    if (!input.validity.valid) {
+        showInputError(input, input.validationMessage); // Показываем сообщение
+    } else {
+        hideInputError(input); // Скрываем сообщение, если всё верно
+    }
+}
 
-// Добавляем класс анимации ко всем поп-апам при загрузке страницы
-document.querySelectorAll('.popup').forEach(popup => {
-    popup.classList.add('popup_is-animated');
+// Функция для показа ошибки
+function showInputError(input, message) {
+    const errorElement = input.parentElement.querySelector('.popup__input-error');
+    errorElement.textContent = message; // Устанавливаем текст ошибки
+    errorElement.style.display = 'block'; // Делаем ошибку видимой
+    input.classList.add('popup__input_invalid'); // Добавляем стиль невалидного поля
+}
+
+// Функция для скрытия ошибки
+function hideInputError(input) {
+    const errorElement = input.parentElement.querySelector('.popup__input-error');
+    errorElement.textContent = ''; // Очищаем текст ошибки
+    errorElement.style.display = 'none'; // Скрываем ошибку
+    input.classList.remove('popup__input_invalid'); // Убираем стиль невалидного поля
+}
+
+// Добавляем обработчики событий для всех полей формы
+const inputs = document.querySelectorAll('.popup__input');
+inputs.forEach((input) => {
+    input.addEventListener('input', () => checkInputValidity(input)); // Проверяем поле на ввод
+});
+
+// Проверка всей формы
+function checkFormValidity(form) {
+    const inputs = form.querySelectorAll('.popup__input');
+    let isValid = true;
+
+    inputs.forEach((input) => {
+        if (!input.validity.valid) {
+            checkInputValidity(input); // Проверяем каждое поле
+            isValid = false;
+        }
+    });
+
+    return isValid;
+}
+
+// Отключение кнопки, если форма невалидна
+function toggleSubmitButton(form, button) {
+    if (checkFormValidity(form)) {
+        button.disabled = false; // Включаем кнопку
+    } else {
+        button.disabled = true; // Отключаем кнопку
+    }
+}
+
+
+const profileForm = document.querySelector('.popup__form');
+const submitButton = profileForm.querySelector('.popup__button');
+
+profileForm.addEventListener('input', () => toggleSubmitButton(profileForm, submitButton));
+
+
+// -------------2номер-------------
+ //coming soon...
+
+
+//------3номер------
+// Функция для закрытия поп-апа по клику на оверлей
+function closeModalOnOverlayClick(evt) {
+    // Проверяем, что клик был именно по оверлею (поп-апу в целом)
+    if (evt.target === evt.currentTarget) {
+        closeModal(evt.target); // Закрываем модалку
+    }
+}
+
+// Применяем обработчик ко всем поп-апам
+const allPopups = document.querySelectorAll('.popup');
+allPopups.forEach((popup) => {
+    popup.addEventListener('click', closeModalOnOverlayClick);
 });
