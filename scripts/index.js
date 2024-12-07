@@ -118,6 +118,8 @@ function renderCards(cards) {
     placesList.append(...cardElements);
 }
 
+
+
 // Обработчик отправки формы добавления карточки
 function handleCardFormSubmit(evt) {
     evt.preventDefault();
@@ -136,7 +138,6 @@ cardFormElement.addEventListener('submit', handleCardFormSubmit);
 // Инициализация карточек
 renderCards(initialCards);
 
-//1номер
 // Функция проверки поля
 function checkInputValidity(input) {
     const errorElement = input.parentElement.querySelector('.popup__input-error');
@@ -163,12 +164,6 @@ function hideInputError(input) {
     input.classList.remove('popup__input_invalid'); // Убираем стиль невалидного поля
 }
 
-// Добавляем обработчики событий для всех полей формы
-const inputs = document.querySelectorAll('.popup__input');
-inputs.forEach((input) => {
-    input.addEventListener('input', () => checkInputValidity(input)); // Проверяем поле на ввод
-});
-
 // Проверка всей формы
 function checkFormValidity(form) {
     const inputs = form.querySelectorAll('.popup__input');
@@ -176,7 +171,6 @@ function checkFormValidity(form) {
 
     inputs.forEach((input) => {
         if (!input.validity.valid) {
-            checkInputValidity(input); // Проверяем каждое поле
             isValid = false;
         }
     });
@@ -193,15 +187,29 @@ function toggleSubmitButton(form, button) {
     }
 }
 
+// Настройка валидации для формы
+function setupFormValidation(form) {
+    const inputs = form.querySelectorAll('.popup__input');
+    const submitButton = form.querySelector('.popup__button');
 
-const profileForm = document.querySelector('.popup__form');
-const submitButton = profileForm.querySelector('.popup__button');
+    inputs.forEach((input) => {
+        input.addEventListener('input', () => {
+            checkInputValidity(input); // Проверяем поле на ввод
+            toggleSubmitButton(form, submitButton); // Управляем состоянием кнопки
+        });
+    });
 
-profileForm.addEventListener('input', () => toggleSubmitButton(profileForm, submitButton));
+    // Устанавливаем начальное состояние кнопки
+    toggleSubmitButton(form, submitButton);
+}
 
+// Инициализация форм
+const profileForm = document.querySelector('.popup__form[name="edit-profile"]');
+const newCardForm = document.querySelector('.popup__form[name="new-place"]');
 
-// -------------2номер-------------
- //coming soon...
+// Включение валидации для обеих форм
+setupFormValidation(profileForm);
+setupFormValidation(newCardForm);
 
 //------3номер------
 // Функция для закрытия поп-апа по клику на оверлей
