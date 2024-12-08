@@ -1,3 +1,33 @@
+import addIcon from '../images/add-icon.svg';
+import avatar from '../images/avatar.jpg';
+import card1 from '../images/card_1.jpg';
+import card2 from '../images/card_2.jpg';
+import card3 from '../images/card_3.jpg';
+import close from '../images/close.svg';
+import deleteIcon from '../images/delete-icon.svg';
+import editIcon from '../images/edit-icon.svg';
+import likeActive from '../images/like-active.svg';
+import likeInactive from '../images/like-inactive.svg';
+import logo from '../images/logo.svg';
+
+const Images = [
+    {name: 'AddIcon', link: addIcon},
+    {name: 'Avatar', link: avatar},
+    {name: 'Card1', link: card1},
+    {name: 'Card2', link: card2},
+    {name: 'Card3', link: card3},
+    {name: 'Close', link: close},
+    {name: 'DeleteIcon', link: deleteIcon},
+    {name: 'EditIcon', link: editIcon},
+    {name: 'LikeActive', link: likeActive},
+    {name: 'LikeInactive', link: likeInactive},
+    {name: 'Logo', link: logo},
+];
+
+import '../pages/index.css';
+
+import initialCards from './cards.js'
+
 // Поп-апы
 const profilePopup = document.querySelector('.popup_type_edit'); // Поп-ап редактирования профиля
 const cardPopup = document.querySelector('.popup_type_new-card'); // Поп-ап добавления карточки
@@ -236,5 +266,7 @@ function closeByEsc(evt) {
         }
     }
 }
+
+
 
 
