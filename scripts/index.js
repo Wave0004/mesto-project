@@ -25,25 +25,30 @@ const Images = [
 ];
 
 import '../pages/index.css';
+import { createCard } from '../src/components/card.js';
+import {openModal} from "../src/components/modal.js";
+import {closeByEsc} from "../src/components/modal.js";
+import {closeModal, closeModalOnOverlayClick} from "../src/components/modal.js";
+import {initialCards } from './cards.js';
+import { enableValidation, checkInputValidity, showInputError, hideInputError, toggleSubmitButton, setEventListeners } from '../src/components/validate.js'; // Импортируем функцию валидации
 
-import initialCards from './cards.js'
+// Объект с настройками для валидации
+const validationSettings = {
+    formSelector: '.popup__form', // Селектор формы
+    inputSelector: '.popup__input', // Селектор для полей ввода
+    submitButtonSelector: '.popup__button', // Селектор для кнопки отправки формы
+    errorClass: '.popup__input-error', // Селектор для элемента ошибки
+    errorClassVisible: 'popup__input-error_visible', // Класс для видимой ошибки
+    inputInvalidClass: 'popup__input_invalid' // Класс для невалидного поля
+};
+
+// Включаем валидацию для всех форм
+enableValidation(validationSettings);
 
 // Поп-апы
 const profilePopup = document.querySelector('.popup_type_edit'); // Поп-ап редактирования профиля
 const cardPopup = document.querySelector('.popup_type_new-card'); // Поп-ап добавления карточки
 const imagePopup = document.querySelector('.popup_type_image'); // Поп-ап с картинкой
-
-// Универсальная функция для открытия поп-апа
-function openModal(popup) {
-    popup.classList.add('popup_is-opened');
-    document.addEventListener('keydown', closeByEsc);  // Добавляем слушателя для клавиши Esc (4 номер)
-}
-
-// Универсальная функция для закрытия поп-апа
-function closeModal(popup) {
-    popup.classList.remove('popup_is-opened');
-    document.removeEventListener('keydown', closeByEsc);  // Удаляем слушателя для клавиши Esc (4 номер)
-}
 
 // --- Редактирование профиля ---
 const editProfileButton = document.querySelector('.profile__edit-button'); // Кнопка "редактировать профиль"
@@ -104,51 +109,13 @@ closeCardPopupButton.addEventListener('click', () => closeModal(cardPopup));
 const closeImagePopupButton = imagePopup.querySelector('.popup__close'); // Кнопка закрытия поп-апа с картинкой
 closeImagePopupButton.addEventListener('click', () => closeModal(imagePopup));
 
-// Функция создания карточки
-function createCard(cardData) {
-    const cardElement = cardTemplate.cloneNode(true);
-
-    const cardImage = cardElement.querySelector('.card__image');
-    const cardTitle = cardElement.querySelector('.card__title');
-    const likeButton = cardElement.querySelector('.card__like-button');
-    const deleteButton = cardElement.querySelector('.card__delete-button');
-
-    cardImage.src = cardData.link;
-    cardImage.alt = cardData.name;
-    cardTitle.textContent = cardData.name;
-
-    // Слушатель для лайка
-    likeButton.addEventListener('click', () => {
-        likeButton.classList.toggle('card__like-button_is-active');
-    });
-
-    // Слушатель для удаления карточки
-    deleteButton.addEventListener('click', () => {
-        cardElement.remove();
-    });
-
-    // Слушатель для открытия изображения
-    cardImage.addEventListener('click', () => {
-        const popupImage = imagePopup.querySelector('.popup__image');
-        const popupCaption = imagePopup.querySelector('.popup__caption');
-
-        popupImage.src = cardData.link;
-        popupImage.alt = cardData.name;
-        popupCaption.textContent = cardData.name;
-
-        openModal(imagePopup);
-    });
-
-    return cardElement;
-}
-
-// Вывод карточек на страницу
 function renderCards(cards) {
-    const cardElements = cards.map((card) => createCard(card));
-    placesList.append(...cardElements);
+    const placesList = document.querySelector('.places__list');
+    cards.forEach((card) => {
+        const cardElement = createCard(card, imagePopup);
+        placesList.append(cardElement);
+    });
 }
-
-
 
 // Обработчик отправки формы добавления карточки
 function handleCardFormSubmit(evt) {
@@ -168,104 +135,38 @@ cardFormElement.addEventListener('submit', handleCardFormSubmit);
 // Инициализация карточек
 renderCards(initialCards);
 
-// Функция проверки поля
-function checkInputValidity(input) {
-    const errorElement = input.parentElement.querySelector('.popup__input-error');
-    if (!input.validity.valid) {
-        showInputError(input, input.validationMessage); // Показываем сообщение
-    } else {
-        hideInputError(input); // Скрываем сообщение, если всё верно
-    }
-}
-
-// Функция для показа ошибки
-function showInputError(input, message) {
-    const errorElement = input.parentElement.querySelector('.popup__input-error');
-    errorElement.textContent = message; // Устанавливаем текст ошибки
-    errorElement.style.display = 'block'; // Делаем ошибку видимой
-    input.classList.add('popup__input_invalid'); // Добавляем стиль невалидного поля
-}
-
-// Функция для скрытия ошибки
-function hideInputError(input) {
-    const errorElement = input.parentElement.querySelector('.popup__input-error');
-    errorElement.textContent = ''; // Очищаем текст ошибки
-    errorElement.style.display = 'none'; // Скрываем ошибку
-    input.classList.remove('popup__input_invalid'); // Убираем стиль невалидного поля
-}
-
-// Проверка всей формы
-function checkFormValidity(form) {
-    const inputs = form.querySelectorAll('.popup__input');
-    let isValid = true;
-
-    inputs.forEach((input) => {
-        if (!input.validity.valid) {
-            isValid = false;
-        }
-    });
-
-    return isValid;
-}
-
-// Отключение кнопки, если форма невалидна
-function toggleSubmitButton(form, button) {
-    if (checkFormValidity(form)) {
-        button.disabled = false; // Включаем кнопку
-    } else {
-        button.disabled = true; // Отключаем кнопку
-    }
-}
 
 // Настройка валидации для формы
-function setupFormValidation(form) {
+function setupFormValidation(form, settings) { // Добавляем settings как аргумент
     const inputs = form.querySelectorAll('.popup__input');
     const submitButton = form.querySelector('.popup__button');
 
     inputs.forEach((input) => {
         input.addEventListener('input', () => {
-            checkInputValidity(input); // Проверяем поле на ввод
-            toggleSubmitButton(form, submitButton); // Управляем состоянием кнопки
+            checkInputValidity(input, settings); // Передаем settings в checkInputValidity
+            toggleSubmitButton(form, submitButton, settings); // Передаем settings в toggleSubmitButton
         });
     });
 
     // Устанавливаем начальное состояние кнопки
-    toggleSubmitButton(form, submitButton);
+    toggleSubmitButton(form, submitButton, settings); // Передаем settings в toggleSubmitButton
 }
+
 
 // Инициализация форм
 const profileForm = document.querySelector('.popup__form[name="edit-profile"]');
 const newCardForm = document.querySelector('.popup__form[name="new-place"]');
 
 // Включение валидации для обеих форм
-setupFormValidation(profileForm);
-setupFormValidation(newCardForm);
+setupFormValidation(profileForm, validationSettings); // Передаем validationSettings
+setupFormValidation(newCardForm, validationSettings); // Передаем validationSettings
 
-//------3номер------
-// Функция для закрытия поп-апа по клику на оверлей
-function closeModalOnOverlayClick(evt) {
-    // Проверяем, что клик был именно по оверлею (поп-апу в целом)
-    if (evt.target === evt.currentTarget) {
-        closeModal(evt.target); // Закрываем модалку
-    }
-}
 
 // Применяем обработчик ко всем поп-апам
 const allPopups = document.querySelectorAll('.popup');
 allPopups.forEach((popup) => {
     popup.addEventListener('click', closeModalOnOverlayClick);
 });
-
-
-// 4 Номер
-function closeByEsc(evt) {
-    if (evt.key === 'Escape') {  // Проверяем, нажата ли клавиша Esc
-        const openedPopup = document.querySelector('.popup_is-opened');  // Находим открытый поп-ап
-        if (openedPopup) {
-            closeModal(openedPopup);  // Закрываем поп-ап
-        }
-    }
-}
 
 
 
