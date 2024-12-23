@@ -1,7 +1,7 @@
 // Универсальная функция для открытия поп-апа
 export function openModal(popup) {
     popup.classList.add('popup_is-opened');
-    document.addEventListener('keydown', closeByEsc);  // Добавляем слушателя для клавиши Esc (4 номер)
+    document.addEventListener('keydown', closeByEsc);  // Добавляем слушателя для клавиши Esc
 }
 
 export function closeByEsc(evt) {
@@ -16,7 +16,7 @@ export function closeByEsc(evt) {
 // Универсальная функция для закрытия поп-апа
 export function closeModal(popup) {
     popup.classList.remove('popup_is-opened');
-    document.removeEventListener('keydown', closeByEsc);  // Удаляем слушателя для клавиши Esc (4 номер)
+    document.removeEventListener('keydown', closeByEsc);  // Удаляем слушателя для клавиши Esc
 }
 
 // Функция для закрытия поп-апа по клику на оверлей
