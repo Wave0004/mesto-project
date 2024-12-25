@@ -37,6 +37,7 @@ import {
   hideInputError,
   toggleSubmitButton,
   setEventListeners,
+    resetValidation,
 } from "./validate.js"; // Импортируем функцию валидации
 
 import {
@@ -160,6 +161,7 @@ const cardFormSubmitBtnElement =
 addCardButton.addEventListener("click", () => {
   cardNameInput.value = ""; // Очистить поле "Название"
   cardLinkInput.value = ""; // Очистить поле "Ссылка на картинку"
+  resetValidation(cardFormElement, validationSettings);
   openModal(cardPopup);
 });
 
@@ -169,6 +171,8 @@ profileAvatarEl.addEventListener("click", () => {
   //avatarInputEl.value = profileAvatarEl.style.backgroundImage
     //.replace('url("', "")
     //.replace('")', "");
+    resetValidation(avatarForm, validationSettings);
+    avatarInputEl.value = "";
 
   openModal(avatarPopup);
 });

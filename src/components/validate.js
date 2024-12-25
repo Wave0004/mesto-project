@@ -59,3 +59,15 @@ export function enableValidation(settings) {
     setEventListeners(form, settings); // Устанавливаем обработчики событий для каждой формы
   });
 }
+
+export function resetValidation(form, settings) {
+  const inputs = form.querySelectorAll(settings.inputSelector);
+  const submitButton = form.querySelector(settings.submitButtonSelector);
+
+  inputs.forEach((input) => {
+    hideInputError(input, settings); // Скрываем все ошибки
+    //input.classList.remove(settings.inputInvalidClass); // Убираем класс невалидного поля
+  });
+
+  toggleSubmitButton(form, submitButton, settings); // Обновляем состояние кнопки
+}
