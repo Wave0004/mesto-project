@@ -1,7 +1,7 @@
 {
   "name": "frontend-developer-canonicals-mesto-step0-template",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "./src/components/index.js",
   "scripts": {
     "build": "webpack --mode production",
     "dev": "webpack serve",
